@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tour_guide/env/env.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseApiKey);
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
