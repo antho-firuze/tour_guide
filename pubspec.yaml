@@ -39,7 +39,12 @@ dependencies:
   flutter_webrtc: ^0.11.3
   flutter_riverpod: ^2.5.1
   envied: ^0.5.4+1
-  iconsax_flutter: ^1.0.0
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  intl: ^0.19.0
+  device_info_plus: ^10.1.0
+  uuid: ^4.4.2
+  super_icons: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +59,9 @@ dev_dependencies:
   riverpod_lint: ^2.3.10
   envied_generator: ^0.5.4+1
   build_runner: ^2.4.11
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  custom_lint: ^0.6.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
