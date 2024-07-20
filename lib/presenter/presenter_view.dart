@@ -1,36 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:super_icons/super_icons.dart';
 import 'package:tour_guide/common/common_controller.dart';
 import 'package:tour_guide/presenter/presenter_controller.dart';
 import 'package:tour_guide/presenter/presenter_service.dart';
+import 'package:tour_guide/signaling/signaling_controller.dart';
 
-class PresenterView extends ConsumerWidget {
+class PresenterView extends ConsumerStatefulWidget {
   const PresenterView({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PresenterView> createState() => _PresenterViewState();
+}
+
+class _PresenterViewState extends ConsumerState<PresenterView> {
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+
+  @override
+  void initState() {
+    _localRenderer.initialize();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(signalingCtrlProvider).openMedia(_localRenderer);
+      await Future.delayed(const Duration(seconds: 5));
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _localRenderer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (ref.watch(presenterProvider) == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Presenter Page')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Text('Device ID => ${ref.read(deviceIdProvider)}'),
-                const SizedBox(height: 20),
-                const Text('Please input the title ?'),
-                const TextField(),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: ref.read(presenterCtrlProvider).start,
-                  child: const Text('Start'),
-                ),
-              ],
+      return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) return;
+
+          await ref.read(signalingCtrlProvider).closeMedia(_localRenderer);
+          if (mounted) Navigator.of(context).pop();
+        },
+        child: Scaffold(
+          appBar: AppBar(title: const Text('Presenter Page')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: 100,
+                    height: 200,
+                    child: RTCVideoView(_localRenderer, mirror: true),
+                  ),
+                  const SizedBox(height: 20),
+                  Text('Device ID => ${ref.read(deviceIdProvider)}'),
+                  const SizedBox(height: 20),
+                  const Text('Please input the title ?'),
+                  const TextField(),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: ref.read(presenterCtrlProvider).start,
+                    child: const Text('Start'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -47,8 +90,7 @@ class PresenterView extends ConsumerWidget {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                const Icon(SuperIcons.bs_broadcast, size: 60),
-                // RTCVideoView(ref.read(localRendererProvider), mirror: true),
+                // const Icon(SuperIcons.bs_broadcast, size: 60),
                 const Text('Online', style: TextStyle(color: Colors.green)),
                 const SizedBox(height: 20),
                 SizedBox(

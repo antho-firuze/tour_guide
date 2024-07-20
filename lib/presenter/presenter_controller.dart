@@ -17,6 +17,8 @@ class PresenterCtrl {
       await ref.read(signalingServiceProvider).removeCandidate(CandidateType.presenter, ref.read(deviceIdProvider));
       await ref.read(presenterSvcProvider).remove(ref.read(deviceIdProvider));
 
+      // await ref.read(signalingCtrlProvider).openMedia();
+
       final data = {
         "label": "Muharram",
         "device_id": ref.read(deviceIdProvider),
@@ -27,7 +29,6 @@ class PresenterCtrl {
       final presenter = Presenter.fromJson(state.value);
       ref.read(presenterProvider.notifier).state = presenter;
 
-      await ref.read(signalingCtrlProvider).openMedia();
       await ref.read(signalingCtrlProvider).create();
 
       // log('result | ${state.value}', name: 'presenter');

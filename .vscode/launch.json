@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "tour_guide",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "tour_guide (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "tour_guide (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "S-A5 Wire",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "52001972ee95649f"
+        },
+        {
+            "name": "RMX1807",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "627eff4e"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All Devices",
+            "configurations": ["S-A5 Wire", "RMX1807"]
+        },
+        {
+            "name": "A5-Emu",
+            "configurations": ["S-A5 Wire", "tour_guide"]
+        }
+    ]
+}

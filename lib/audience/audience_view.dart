@@ -53,13 +53,15 @@ class AudienceView extends ConsumerWidget {
           if (data == null || data.isEmpty) {
             return const Padding(
               padding: EdgeInsets.only(top: 30),
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  Icon(SuperIcons.bs_person_x, size: 60),
-                  SizedBox(height: 20),
-                  Text('Belum ada pembicara !'),
-                ],
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    Icon(SuperIcons.bs_person_x, size: 60),
+                    SizedBox(height: 20),
+                    Text('Belum ada pembicara !'),
+                  ],
+                ),
               ),
             );
           }

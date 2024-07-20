@@ -10,8 +10,6 @@ import 'package:tour_guide/signaling/signaling_service.dart';
 
 typedef StreamStateCallback = void Function(MediaStream stream);
 
-final localRendererProvider = StateProvider<RTCVideoRenderer>((ref) => RTCVideoRenderer());
-
 class SignalingCtrl {
   Ref ref;
   SignalingCtrl(this.ref);
@@ -43,8 +41,10 @@ class SignalingCtrl {
 
       registerPeerConnectionListeners();
 
-      localStream?.getTracks().forEach((track) {
-        peerConnection?.addTrack(track, localStream!);
+      // LOCAL STREAM
+      localStream?.getTracks().forEach((track) async {
+        log('local stream | ok', name: 'signaling');
+        await peerConnection?.addTrack(track, localStream!);
       });
 
       // CANDIDATES
@@ -69,12 +69,13 @@ class SignalingCtrl {
 
       await peerConnection?.setLocalDescription(offer);
 
-      peerConnection!.onTrack = (RTCTrackEvent event) {
-        event.streams[0].getTracks().forEach((track) {
-          log('Add a track to the remoteStream $track', name: 'signaling');
-          remoteStream?.addTrack(track);
-        });
-      };
+      // REMOTE STREAM
+      // peerConnection!.onTrack = (RTCTrackEvent event) {
+      //   event.streams[0].getTracks().forEach((track) {
+      //     log('Add a track to the remoteStream $track', name: 'signaling');
+      //     remoteStream?.addTrack(track);
+      //   });
+      // };
 
       ref.listen(liveAudienceProvider(ref.watch(presenterProvider)!.id!), (previous, next) async {
         List<Audience>? audiences = next.value;
@@ -118,18 +119,26 @@ class SignalingCtrl {
       await ref.read(signalingServiceProvider).removeCandidate(CandidateType.presenter, ref.read(deviceIdProvider));
       await peerConnection?.close();
       peerConnection = null;
-      await ref.read(localRendererProvider.notifier).state.dispose();
       log('close | ok', name: 'signaling');
     } catch (e) {
       log('close', error: e, name: 'signaling');
     }
   }
 
-  Future openMedia() async {
-    await ref.read(localRendererProvider.notifier).state.initialize();
-    var stream = await navigator.mediaDevices.getUserMedia({'video': false, 'audio': true});
-    ref.read(localRendererProvider.notifier).state.srcObject = stream;
+  Future openMedia(RTCVideoRenderer localRenderer) async {
+    log('openMedia', name: 'signaling');
+    var stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': false});
+    localRenderer.srcObject = stream;
     localStream = stream;
+  }
+
+  Future closeMedia(RTCVideoRenderer localRenderer) async {
+    log('closeMedia', name: 'signaling');
+    List<MediaStreamTrack> tracks = localRenderer.srcObject!.getTracks();
+    for (var track in tracks) {
+      track.stop();
+    }
+    localStream?.dispose();
   }
 
   Future join() async {}
@@ -162,11 +171,11 @@ class SignalingCtrl {
       log('Signaling state change: $state', name: 'signaling');
     };
 
-    peerConnection?.onAddStream = (MediaStream stream) {
-      log("Add remote stream", name: 'signaling');
-      onAddRemoteStream?.call(stream);
-      remoteStream = stream;
-    };
+    // peerConnection?.onAddStream = (MediaStream stream) {
+    //   log("Add remote stream", name: 'signaling');
+    //   onAddRemoteStream?.call(stream);
+    //   remoteStream = stream;
+    // };
   }
 }
 

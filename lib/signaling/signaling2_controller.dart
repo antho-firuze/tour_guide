@@ -9,7 +9,7 @@ import 'package:tour_guide/signaling/signaling_service.dart';
 
 typedef StreamStateCallback = void Function(MediaStream stream);
 
-final remoteRendererProvider = StateProvider<RTCVideoRenderer>((ref) => RTCVideoRenderer());
+final remoteRendererProvider = StateProvider.autoDispose<RTCVideoRenderer>((ref) => RTCVideoRenderer());
 
 class Signaling2Ctrl {
   Ref ref;
@@ -42,9 +42,10 @@ class Signaling2Ctrl {
 
       registerPeerConnectionListeners();
 
-      localStream?.getTracks().forEach((track) {
-        peerConnection?.addTrack(track, localStream!);
-      });
+      // LOCAL STREAM
+      // localStream?.getTracks().forEach((track) {
+      //   peerConnection?.addTrack(track, localStream!);
+      // });
 
       // CANDIDATES
       peerConnection!.onIceCandidate = (RTCIceCandidate candidate) async {
@@ -57,10 +58,11 @@ class Signaling2Ctrl {
         log('got candidate | ok', name: 'signaling2');
       };
 
+      // REMOTE STREAM
       peerConnection!.onTrack = (RTCTrackEvent event) {
-        event.streams[0].getTracks().forEach((track) {
+        event.streams[0].getTracks().forEach((track) async {
           log('Add a track to the remoteStream $track', name: 'signaling2');
-          remoteStream?.addTrack(track);
+          await remoteStream?.addTrack(track);
         });
       };
 
@@ -109,7 +111,7 @@ class Signaling2Ctrl {
       await ref.read(signalingServiceProvider).removeCandidate(CandidateType.audience, ref.read(deviceIdProvider));
       await peerConnection?.close();
       peerConnection = null;
-      await ref.read(remoteRendererProvider.notifier).state.dispose();
+      // await ref.read(remoteRendererProvider.notifier).state.dispose();
       log('close | ok', name: 'signaling2');
     } catch (e) {
       log('close', error: e, name: 'signaling2');
@@ -138,11 +140,11 @@ class Signaling2Ctrl {
       log('Signaling state change: $state', name: 'signaling2');
     };
 
-    peerConnection?.onAddStream = (MediaStream stream) {
-      log("Add remote stream", name: 'signaling2');
-      onAddRemoteStream?.call(stream);
-      remoteStream = stream;
-    };
+    // peerConnection?.onAddStream = (MediaStream stream) {
+    //   log("Add remote stream", name: 'signaling2');
+    //   onAddRemoteStream?.call(stream);
+    //   remoteStream = stream;
+    // };
   }
 }
 
