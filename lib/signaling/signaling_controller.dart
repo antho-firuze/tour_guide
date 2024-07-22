@@ -3,70 +3,93 @@ import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:tour_guide/common/common_controller.dart';
-import 'package:tour_guide/model/audience.dart';
-import 'package:tour_guide/presenter/presenter_controller.dart';
+import 'package:tour_guide/model/presenter.dart';
 import 'package:tour_guide/presenter/presenter_service.dart';
 import 'package:tour_guide/signaling/signaling_service.dart';
 
 typedef StreamStateCallback = void Function(MediaStream stream);
 
+final localRendererProvider = StateProvider<RTCVideoRenderer>((ref) => RTCVideoRenderer());
+
 class SignalingCtrl {
   Ref ref;
   SignalingCtrl(this.ref);
 
+  // Map<String, dynamic> configuration = {
+  //   'iceServers': [
+  //     {
+  //       'urls': [
+  //         'stun:stun.l.google.com:19302',
+  //         'stun:stun1.l.google.com:19302',
+  //         'stun:stun2.l.google.com:19302',
+  //         'stun:stun3.l.google.com:19302',
+  //         'stun:stun4.l.google.com:19302',
+  //       ]
+  //     }
+  //   ],
+  //   'iceTransportPolicy': 'relay',
+  //   'sdpSemantics': 'uinified-plan',
+  // };
+
   Map<String, dynamic> configuration = {
-    'iceServers': [
-      {
-        'urls': [
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',
-          'stun:stun3.l.google.com:19302',
-          'stun:stun4.l.google.com:19302',
-        ]
-      }
-    ]
+    'ice_servers': [
+      {"url": "stun:stun3.l.google.com:19302", "urls": "stun:stun3.l.google.com:19302"},
+    ],
   };
 
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
-  MediaStream? remoteStream;
-  String? roomId;
-  String? currentRoomText;
-  StreamStateCallback? onAddRemoteStream;
 
-  Future<bool> create() async {
+  ProviderSubscription? liveAudienceSubs;
+  ProviderSubscription? audienceCandidatesSubs;
+
+  Future initialize() async {
+    final videoRenderer = RTCVideoRenderer();
+    await videoRenderer.initialize();
+    ref.read(localRendererProvider.notifier).state = videoRenderer;
+  }
+
+  Future<bool> create(Presenter presenter) async {
+    await initialize();
+
     try {
       log('createPeerConnection | $configuration', name: 'signaling');
       peerConnection = await createPeerConnection(configuration);
 
       registerPeerConnectionListeners();
 
-      // LOCAL STREAM
-      localStream?.getTracks().forEach((track) async {
-        log('local stream | ok', name: 'signaling');
-        await peerConnection?.addTrack(track, localStream!);
-      });
-
       // CANDIDATES
       peerConnection!.onIceCandidate = (RTCIceCandidate candidate) async {
         var data = {
-          "presenter_id": ref.read(presenterProvider)!.id,
+          "presenter_id": presenter.id,
           "device_id": ref.read(deviceIdProvider),
           "candidate": candidate.toMap(),
         };
+        log('Got ICE Candidate', name: 'signaling');
         await ref.read(signalingServiceProvider).addCandidate(CandidateType.presenter, data);
-        log('got candidate | ok', name: 'signaling');
       };
 
+      // LOCAL STREAM
+      localStream = await navigator.mediaDevices.getUserMedia({'audio': true, 'video': true});
+
+      ref.read(localRendererProvider.notifier).state.srcObject = localStream;
+
+      localStream?.getTracks().forEach((track) async {
+        log('peerConnection?.addTrack | $track', name: 'signaling');
+        await peerConnection?.addTrack(track, localStream!);
+      });
+
       // OFFER
-      RTCSessionDescription offer = await peerConnection!.createOffer();
+      log('Create Offer', name: 'signaling');
+      final offer = await peerConnection!.createOffer();
       var data = {
         "device_id": ref.read(deviceIdProvider),
         "offer": offer.toMap(),
       };
+      log('Upsert Offer | $data', name: 'signaling');
       await ref.read(presenterSvcProvider).upsert(data);
-      log('Created offer | ok', name: 'signaling');
 
+      log('setLocalDescription', name: 'signaling');
       await peerConnection?.setLocalDescription(offer);
 
       // REMOTE STREAM
@@ -77,33 +100,35 @@ class SignalingCtrl {
       //   });
       // };
 
-      ref.listen(liveAudienceProvider(ref.watch(presenterProvider)!.id!), (previous, next) async {
-        List<Audience>? audiences = next.value;
+      log('Waiting for audience....', name: 'signaling');
+      liveAudienceSubs = ref.listen(liveAudienceProvider(presenter.id!), (previous, next) async {
+        final audiences = next.value;
         if (audiences != null && audiences.isNotEmpty) {
-          // log('Count Audience | ${audiences.length}', name: 'signaling');
           for (var audience in audiences) {
-            // log('Got Audience | ${audience.deviceId}', name: 'signaling');
-            if (await peerConnection?.getRemoteDescription() != null && audience.answer != null) {
+            if (audience.answer != null) {
+              log('Count Audience | ${audiences.length} (had ${audience.answer!['type']})', name: 'signaling');
               var answer = RTCSessionDescription(audience.answer!['sdp'], audience.answer!['type']);
-              log('Got Audience | ${audience.deviceId}', name: 'signaling');
+              log('setRemoteDescription', name: 'signaling');
               await peerConnection?.setRemoteDescription(answer);
-            }
 
-            ref.listen(audienceCandidateProvider(audience.deviceId), (previous, next) async {
-              log('Got new remote ICE candidate', name: 'signaling');
-              List<Map<String, dynamic>>? candidates = next.value;
-              if (candidates != null && candidates.isNotEmpty) {
-                for (var row in candidates) {
-                  final candidate = row['candidate'];
-                  await peerConnection?.addCandidate(
-                    RTCIceCandidate(candidate['candidate'], candidate['sdpMid'], candidate['sdpMLineIndex']),
-                  );
-                }
-              }
-            });
+              // log('Waiting for audience candidate....', name: 'signaling');
+              // audienceCandidatesSubs = ref.listen(audienceCandidateProvider(audience.deviceId), (previous, next) async {
+              //   List<Map<String, dynamic>>? candidates = next.value;
+              //   log('Got new remote ICE candidate | ${candidates?.length}', name: 'signaling');
+              //   if (candidates != null && candidates.isNotEmpty) {
+              //     for (var row in candidates) {
+              //       final candidate = row['candidate'];
+              //       await peerConnection?.addCandidate(
+              //         RTCIceCandidate(candidate['candidate'], candidate['sdpMid'], candidate['sdpMLineIndex']),
+              //       );
+              //       log('Adding remote ICE candidate', name: 'signaling');
+              //     }
+              //   }
+              // });
+            }
           }
         } else {
-          log('Hangout Audience', name: 'signaling');
+          log('Count Audience | ${audiences?.length}', name: 'signaling');
         }
       });
 
@@ -114,43 +139,27 @@ class SignalingCtrl {
     }
   }
 
-  Future close() async {
+  Future<bool> close() async {
     try {
+      log('Signaling Close', name: 'signaling');
+
+      await localStream?.dispose();
+      localStream = null;
+      await peerConnection?.close();
+      peerConnection = null;
+      ref.read(localRendererProvider.notifier).state.srcObject = null;
+      await ref.read(localRendererProvider.notifier).state.dispose();
+
       await ref.read(signalingServiceProvider).removeCandidate(CandidateType.presenter, ref.read(deviceIdProvider));
-      await peerConnection?.close();
-      peerConnection = null;
-      log('close | ok', name: 'signaling');
+
+      log('Closing subscription', name: 'signaling');
+      liveAudienceSubs?.close();
+      audienceCandidatesSubs?.close();
+
+      return true;
     } catch (e) {
       log('close', error: e, name: 'signaling');
-    }
-  }
-
-  Future openMedia(RTCVideoRenderer localRenderer) async {
-    log('openMedia', name: 'signaling');
-    var stream = await navigator.mediaDevices.getUserMedia({'video': true, 'audio': false});
-    localRenderer.srcObject = stream;
-    localStream = stream;
-  }
-
-  Future closeMedia(RTCVideoRenderer localRenderer) async {
-    log('closeMedia', name: 'signaling');
-    List<MediaStreamTrack> tracks = localRenderer.srcObject!.getTracks();
-    for (var track in tracks) {
-      track.stop();
-    }
-    localStream?.dispose();
-  }
-
-  Future join() async {}
-
-  Future unjoin() async {
-    try {
-      await ref.read(signalingServiceProvider).removeCandidate(CandidateType.audience, ref.read(deviceIdProvider));
-      await peerConnection?.close();
-      peerConnection = null;
-      log('close | ok', name: 'signaling');
-    } catch (e) {
-      log('close', error: e, name: 'signaling');
+      return false;
     }
   }
 
@@ -170,12 +179,6 @@ class SignalingCtrl {
     peerConnection?.onSignalingState = (RTCSignalingState state) {
       log('Signaling state change: $state', name: 'signaling');
     };
-
-    // peerConnection?.onAddStream = (MediaStream stream) {
-    //   log("Add remote stream", name: 'signaling');
-    //   onAddRemoteStream?.call(stream);
-    //   remoteStream = stream;
-    // };
   }
 }
 

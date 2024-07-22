@@ -6,6 +6,8 @@ extension PageUtilContext on BuildContext {
   Future goto({required Widget page}) async => await Navigator.of(this, rootNavigator: true).push(CupertinoPageRoute(
         builder: (context) => page,
       ));
+
+  void pop() => Navigator.of(this).pop();
 }
 
 class PageUtils {

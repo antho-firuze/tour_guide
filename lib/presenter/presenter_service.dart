@@ -19,6 +19,15 @@ class PresenterSvc {
   Ref ref;
   PresenterSvc(this.ref);
 
+  // Future<List<Map<String, dynamic>>?> getAudienceCandidates(String identifier) async {
+  //   try {
+  //     final rows = await Supabase.instance.client.from('audience_candidates').select().eq('device_id', identifier);
+  //     return rows;
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
+
   Future upsert(Object data) async {
     try {
       final result = await Supabase.instance.client

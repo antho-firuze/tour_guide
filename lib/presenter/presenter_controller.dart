@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tour_guide/common/common_controller.dart';
 import 'package:tour_guide/model/presenter.dart';
@@ -17,8 +19,6 @@ class PresenterCtrl {
       await ref.read(signalingServiceProvider).removeCandidate(CandidateType.presenter, ref.read(deviceIdProvider));
       await ref.read(presenterSvcProvider).remove(ref.read(deviceIdProvider));
 
-      // await ref.read(signalingCtrlProvider).openMedia();
-
       final data = {
         "label": "Muharram",
         "device_id": ref.read(deviceIdProvider),
@@ -27,21 +27,20 @@ class PresenterCtrl {
       final state = await AsyncValue.guard(() async => await ref.read(presenterSvcProvider).upsert(data));
 
       final presenter = Presenter.fromJson(state.value);
+
+      await ref.read(signalingCtrlProvider).create(presenter);
+
       ref.read(presenterProvider.notifier).state = presenter;
-
-      await ref.read(signalingCtrlProvider).create();
-
-      // log('result | ${state.value}', name: 'presenter');
     } catch (e) {
-      // ref.read(errorProvider.notifier).state = e.toString();
-      // log('createPeerConnection', error: e, name: 'signaling');
+      log('PresenterCtrl | start', error: e, name: 'signaling');
     }
   }
 
   Future stop() async {
-    await ref.read(presenterSvcProvider).remove(ref.read(deviceIdProvider));
-    await ref.read(signalingCtrlProvider).close();
-    ref.read(presenterProvider.notifier).state = null;
+    if (await ref.read(signalingCtrlProvider).close()) {
+      await ref.read(presenterSvcProvider).remove(ref.read(deviceIdProvider));
+      ref.read(presenterProvider.notifier).state = null;
+    }
   }
 }
 

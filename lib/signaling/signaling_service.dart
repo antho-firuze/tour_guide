@@ -17,7 +17,7 @@ class SignalingService {
       if (type == CandidateType.audience) {
         await Supabase.instance.client.from('audience_candidates').insert(data);
       }
-      log('addCandidate | ok', name: 'signaling');
+      // log('addCandidate | ok', name: 'signaling');
     } catch (e) {
       log('addCandidate | error | $e', name: 'signaling');
     }

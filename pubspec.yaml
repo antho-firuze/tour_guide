@@ -45,6 +45,7 @@ dependencies:
   device_info_plus: ^10.1.0
   uuid: ^4.4.2
   super_icons: ^1.0.3
+  wakelock_plus: ^1.2.5
 
 dev_dependencies:
   flutter_test:

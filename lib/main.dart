@@ -7,6 +7,7 @@ import 'package:tour_guide/common/common_controller.dart';
 import 'package:tour_guide/env/env.dart';
 import 'package:tour_guide/presenter/presenter_view.dart';
 import 'package:tour_guide/utils/page_utils.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 

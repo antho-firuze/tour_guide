@@ -1,27 +1,62 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:super_icons/super_icons.dart';
 import 'package:tour_guide/audience/audience_controller.dart';
 import 'package:tour_guide/audience/audience_service.dart';
+import 'package:tour_guide/signaling/signaling2_controller.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
-class AudienceView extends ConsumerWidget {
+class AudienceView extends ConsumerStatefulWidget {
   const AudienceView({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AudienceView> createState() => _AudienceViewState();
+}
+
+class _AudienceViewState extends ConsumerState<AudienceView> {
+  @override
+  void initState() {
+    WakelockPlus.enable();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final presenter = ref.watch(selectedPresenterProvider);
     if (presenter != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Audience Page')),
+        appBar: AppBar(title: const Text('Audience Page'), automaticallyImplyLeading: false),
         body: Stack(
           children: [
             Center(
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  const Text('You are now listening to :'),
+                  if (ref.watch(isConnectionEstablishedProvider)) ...[
+                    const Text('You are now listening to :'),
+                    SizedBox(
+                      width: 100,
+                      height: 200,
+                      child: RTCVideoView(ref.watch(remoteRendererProvider)),
+                    ),
+                  ] else ...[
+                    const Text('Waiting connection to presenter !'),
+                    const SizedBox(height: 30),
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                  const SizedBox(height: 30),
                   const SizedBox(height: 30),
                   Text('Topic : ${presenter.label}'),
                   const SizedBox(height: 20),

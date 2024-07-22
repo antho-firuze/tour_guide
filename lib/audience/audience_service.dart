@@ -10,15 +10,24 @@ final livePresenterProvider = StreamProvider<List<Presenter>?>((ref) async* {
       .stream(primaryKey: ['id']).map((event) => event.map(Presenter.fromJson).toList());
 });
 
-final presenterCandidateProvider = StreamProvider.family<List<Map<String, dynamic>>?, String>((ref, identifier) async* {
-  yield* Supabase.instance.client
-      .from('presenter_candidates')
-      .stream(primaryKey: ['id']).inFilter('device_id', [identifier]);
-});
+// final presenterCandidateProvider = StreamProvider.family<List<Map<String, dynamic>>?, String>((ref, identifier) async* {
+//   yield* Supabase.instance.client
+//       .from('presenter_candidates')
+//       .stream(primaryKey: ['id']).inFilter('device_id', [identifier]);
+// });
 
 class AudienceSvc {
   Ref ref;
   AudienceSvc(this.ref);
+
+  Future<List<Map<String, dynamic>>?> getPresenterCandidates(String identifier) async {
+    try {
+      final rows = await Supabase.instance.client.from('presenter_candidates').select().eq('device_id', identifier);
+      return rows;
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future upsert(Object data) async {
     try {
@@ -28,7 +37,7 @@ class AudienceSvc {
           .select()
           .limit(1)
           .single();
-      log('upsert | ok', name: 'audience');
+      // log('upsert | ok', name: 'audience');
       return result;
     } catch (e) {
       log('upsert | error | $e', name: 'audience');
