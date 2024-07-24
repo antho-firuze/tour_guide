@@ -32,6 +32,18 @@
             "request": "launch",
             "type": "dart",
             "deviceId": "627eff4e"
+        },
+        {
+            "name": "Pixel-7",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "Pixel-3",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5556"
         }
     ],
     "compounds": [
@@ -40,8 +52,16 @@
             "configurations": ["S-A5 Wire", "RMX1807"]
         },
         {
+            "name": "All Emu",
+            "configurations": ["Pixel-7", "Pixel-3"]
+        },
+        {
             "name": "A5-Emu",
             "configurations": ["S-A5 Wire", "tour_guide"]
+        },
+        {
+            "name": "A5-All-Emu",
+            "configurations": ["S-A5 Wire", "Pixel-7", "Pixel-3"]
         }
     ]
 }

@@ -6,8 +6,9 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:super_icons/super_icons.dart';
 import 'package:tour_guide/common/common_controller.dart';
 import 'package:tour_guide/presenter/presenter_controller.dart';
-import 'package:tour_guide/presenter/presenter_service.dart';
 import 'package:tour_guide/signaling/signaling_controller.dart';
+import 'package:tour_guide/signaling/signaling_service.dart';
+import 'package:tour_guide/utils/page_utils.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class PresenterView extends ConsumerStatefulWidget {
@@ -34,24 +35,88 @@ class _PresenterViewState extends ConsumerState<PresenterView> {
 
   @override
   Widget build(BuildContext context) {
-    if (ref.watch(presenterProvider) == null) {
+    if (!ref.watch(isOnlineProvider)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Presenter Page')),
+        appBar: AppBar(
+          title: const Text('Presenter Page'),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await showModalBottomSheet(
+                  context: context,
+                  builder: (context) => ListView(
+                    shrinkWrap: true,
+                    children: [
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Center(child: Text('STUN/TURN Server :')),
+                            Center(
+                              child: Text(
+                                '${serverName[ref.watch(serverProvider)]}',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text('Set STUN/TURN Server :'),
+                          ],
+                        ),
+                      ),
+                      ListTile(
+                        title: Text('${serverName[Server.google]}'),
+                        onTap: () {
+                          ref.read(serverProvider.notifier).state = Server.google;
+                          if (mounted) context.pop();
+                        },
+                      ),
+                      ListTile(
+                        title: Text('${serverName[Server.meteredCA]}'),
+                        onTap: () {
+                          ref.read(serverProvider.notifier).state = Server.meteredCA;
+                          if (mounted) context.pop();
+                        },
+                      ),
+                      ListTile(
+                        title: Text('${serverName[Server.twilio]}'),
+                        onTap: () {
+                          ref.read(serverProvider.notifier).state = Server.twilio;
+                          if (mounted) context.pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+              tooltip: 'STUN/TURN Server',
+              icon: const Icon(SuperIcons.cl_server_solid),
+            ),
+          ],
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                Text('Device ID => ${ref.read(deviceIdProvider)}'),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 const Text('Please input the title ?'),
-                const TextField(),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: ref.read(presenterCtrlProvider).start,
-                  child: const Text('Start'),
+                TextFormField(
+                  initialValue: ref.watch(titleProvider).isEmpty ? 'Umrah 2024' : ref.watch(titleProvider),
+                  onChanged: (value) => ref.read(titleProvider.notifier).state = value,
                 ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: ref.read(presenterCtrlProvider).start,
+                    child: const Text('Start'),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Text('Device ID => ${ref.read(deviceIdProvider)}'),
               ],
             ),
           ),
@@ -59,7 +124,17 @@ class _PresenterViewState extends ConsumerState<PresenterView> {
       );
     }
 
-    final liveAudience = ref.watch(liveAudienceProvider(ref.watch(presenterProvider)!.id!));
+    if (ref.watch(presenterProvider) == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Presenter Page')),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final presenter = ref.watch(presenterProvider);
+    final liveAudience = ref.watch(audienceStreamProvider(presenter!.id!));
     log('build presenter view', name: 'presenter');
     return Scaffold(
       appBar: AppBar(title: const Text('Presenter Page')),
@@ -74,7 +149,7 @@ class _PresenterViewState extends ConsumerState<PresenterView> {
                 SizedBox(
                   width: 100,
                   height: 200,
-                  child: RTCVideoView(ref.watch(localRendererProvider), mirror: true),
+                  child: RTCVideoView(ref.watch(localRendererProvider)!, mirror: true),
                 ),
                 const Text('Online', style: TextStyle(color: Colors.green)),
                 const SizedBox(height: 20),

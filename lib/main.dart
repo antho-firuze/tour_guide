@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,9 +6,9 @@ import 'package:tour_guide/common/common_controller.dart';
 import 'package:tour_guide/env/env.dart';
 import 'package:tour_guide/presenter/presenter_view.dart';
 import 'package:tour_guide/utils/page_utils.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
+final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseApiKey);
@@ -23,6 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: rootNavigatorKey,
+      scaffoldMessengerKey: scaffoldKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -68,13 +68,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 ElevatedButton(
                   child: const Text('Presenter'),
                   onPressed: () {
-                    context.goto(page: PresenterView());
+                    context.goto(page: const PresenterView());
                   },
                 ),
                 ElevatedButton(
                   child: const Text('Audience'),
                   onPressed: () {
-                    context.goto(page: AudienceView());
+                    context.goto(page: const AudienceView());
                   },
                 ),
               ],

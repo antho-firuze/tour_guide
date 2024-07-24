@@ -3,30 +3,10 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:tour_guide/model/audience.dart';
-
-final liveAudienceProvider = StreamProvider.family<List<Audience>?, int>((ref, id) async* {
-  yield* Supabase.instance.client
-      .from('audience')
-      .stream(primaryKey: ['id']).inFilter('presenter_id', [id]).map((event) => event.map(Audience.fromJson).toList());
-});
-
-final audienceCandidateProvider = StreamProvider.family<List<Map<String, dynamic>>?, String>((ref, identifier) async* {
-  yield* Supabase.instance.client.from('audience_candidates').stream(primaryKey: ['id']).inFilter('device_id', [identifier]);
-});
 
 class PresenterSvc {
   Ref ref;
   PresenterSvc(this.ref);
-
-  // Future<List<Map<String, dynamic>>?> getAudienceCandidates(String identifier) async {
-  //   try {
-  //     final rows = await Supabase.instance.client.from('audience_candidates').select().eq('device_id', identifier);
-  //     return rows;
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // }
 
   Future upsert(Object data) async {
     try {
@@ -40,15 +20,6 @@ class PresenterSvc {
       return result;
     } catch (e) {
       log('upsert | error | $e', name: 'presenter');
-    }
-  }
-
-  Future remove(String identifier) async {
-    try {
-      await Supabase.instance.client.from('presenter').delete().eq('device_id', identifier);
-      log('remove | ok', name: 'presenter');
-    } catch (e) {
-      log('remove | error | $e', name: 'presenter');
     }
   }
 }

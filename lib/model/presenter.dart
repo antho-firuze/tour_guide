@@ -10,11 +10,10 @@ class Presenter with _$Presenter {
 
   factory Presenter({
     int? id,
-    @JsonKey(name: 'device_id') @Default('') String deviceId,
-    @Default('') String label,
-    Map<String, dynamic>? offer,
-    DateTime? heartbeat,
     @JsonKey(name: 'created_at') DateTime? createdAt,
+    @Default('') String label,
+    @JsonKey(name: 'device_id') @Default('') String deviceId,
+    DateTime? heartbeat,
   }) = _Presenter;
 
   factory Presenter.fromJson(Map<String, dynamic> json) => _$PresenterFromJson(json);

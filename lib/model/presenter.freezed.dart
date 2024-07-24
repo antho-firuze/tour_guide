@@ -21,13 +21,12 @@ Presenter _$PresenterFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Presenter {
   int? get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'device_id')
-  String get deviceId => throw _privateConstructorUsedError;
-  String get label => throw _privateConstructorUsedError;
-  Map<String, dynamic>? get offer => throw _privateConstructorUsedError;
-  DateTime? get heartbeat => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime? get createdAt => throw _privateConstructorUsedError;
+  String get label => throw _privateConstructorUsedError;
+  @JsonKey(name: 'device_id')
+  String get deviceId => throw _privateConstructorUsedError;
+  DateTime? get heartbeat => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,11 +41,10 @@ abstract class $PresenterCopyWith<$Res> {
   @useResult
   $Res call(
       {int? id,
-      @JsonKey(name: 'device_id') String deviceId,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
       String label,
-      Map<String, dynamic>? offer,
-      DateTime? heartbeat,
-      @JsonKey(name: 'created_at') DateTime? createdAt});
+      @JsonKey(name: 'device_id') String deviceId,
+      DateTime? heartbeat});
 }
 
 /// @nodoc
@@ -63,36 +61,31 @@ class _$PresenterCopyWithImpl<$Res, $Val extends Presenter>
   @override
   $Res call({
     Object? id = freezed,
-    Object? deviceId = null,
-    Object? label = null,
-    Object? offer = freezed,
-    Object? heartbeat = freezed,
     Object? createdAt = freezed,
+    Object? label = null,
+    Object? deviceId = null,
+    Object? heartbeat = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int?,
-      deviceId: null == deviceId
-          ? _value.deviceId
-          : deviceId // ignore: cast_nullable_to_non_nullable
-              as String,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       label: null == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String,
-      offer: freezed == offer
-          ? _value.offer
-          : offer // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
+      deviceId: null == deviceId
+          ? _value.deviceId
+          : deviceId // ignore: cast_nullable_to_non_nullable
+              as String,
       heartbeat: freezed == heartbeat
           ? _value.heartbeat
           : heartbeat // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
     ) as $Val);
   }
@@ -108,11 +101,10 @@ abstract class _$$PresenterImplCopyWith<$Res>
   @useResult
   $Res call(
       {int? id,
-      @JsonKey(name: 'device_id') String deviceId,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
       String label,
-      Map<String, dynamic>? offer,
-      DateTime? heartbeat,
-      @JsonKey(name: 'created_at') DateTime? createdAt});
+      @JsonKey(name: 'device_id') String deviceId,
+      DateTime? heartbeat});
 }
 
 /// @nodoc
@@ -127,36 +119,31 @@ class __$$PresenterImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? deviceId = null,
-    Object? label = null,
-    Object? offer = freezed,
-    Object? heartbeat = freezed,
     Object? createdAt = freezed,
+    Object? label = null,
+    Object? deviceId = null,
+    Object? heartbeat = freezed,
   }) {
     return _then(_$PresenterImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int?,
-      deviceId: null == deviceId
-          ? _value.deviceId
-          : deviceId // ignore: cast_nullable_to_non_nullable
-              as String,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       label: null == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String,
-      offer: freezed == offer
-          ? _value._offer
-          : offer // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
+      deviceId: null == deviceId
+          ? _value.deviceId
+          : deviceId // ignore: cast_nullable_to_non_nullable
+              as String,
       heartbeat: freezed == heartbeat
           ? _value.heartbeat
           : heartbeat // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
     ));
   }
@@ -167,12 +154,10 @@ class __$$PresenterImplCopyWithImpl<$Res>
 class _$PresenterImpl implements _Presenter {
   _$PresenterImpl(
       {this.id,
-      @JsonKey(name: 'device_id') this.deviceId = '',
+      @JsonKey(name: 'created_at') this.createdAt,
       this.label = '',
-      final Map<String, dynamic>? offer,
-      this.heartbeat,
-      @JsonKey(name: 'created_at') this.createdAt})
-      : _offer = offer;
+      @JsonKey(name: 'device_id') this.deviceId = '',
+      this.heartbeat});
 
   factory _$PresenterImpl.fromJson(Map<String, dynamic> json) =>
       _$$PresenterImplFromJson(json);
@@ -180,30 +165,20 @@ class _$PresenterImpl implements _Presenter {
   @override
   final int? id;
   @override
-  @JsonKey(name: 'device_id')
-  final String deviceId;
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
   @override
   @JsonKey()
   final String label;
-  final Map<String, dynamic>? _offer;
   @override
-  Map<String, dynamic>? get offer {
-    final value = _offer;
-    if (value == null) return null;
-    if (_offer is EqualUnmodifiableMapView) return _offer;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(value);
-  }
-
+  @JsonKey(name: 'device_id')
+  final String deviceId;
   @override
   final DateTime? heartbeat;
-  @override
-  @JsonKey(name: 'created_at')
-  final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'Presenter(id: $id, deviceId: $deviceId, label: $label, offer: $offer, heartbeat: $heartbeat, createdAt: $createdAt)';
+    return 'Presenter(id: $id, createdAt: $createdAt, label: $label, deviceId: $deviceId, heartbeat: $heartbeat)';
   }
 
   @override
@@ -212,20 +187,19 @@ class _$PresenterImpl implements _Presenter {
         (other.runtimeType == runtimeType &&
             other is _$PresenterImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.label, label) || other.label == label) &&
             (identical(other.deviceId, deviceId) ||
                 other.deviceId == deviceId) &&
-            (identical(other.label, label) || other.label == label) &&
-            const DeepCollectionEquality().equals(other._offer, _offer) &&
             (identical(other.heartbeat, heartbeat) ||
-                other.heartbeat == heartbeat) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.heartbeat == heartbeat));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, deviceId, label,
-      const DeepCollectionEquality().hash(_offer), heartbeat, createdAt);
+  int get hashCode =>
+      Object.hash(runtimeType, id, createdAt, label, deviceId, heartbeat);
 
   @JsonKey(ignore: true)
   @override
@@ -243,13 +217,11 @@ class _$PresenterImpl implements _Presenter {
 
 abstract class _Presenter implements Presenter {
   factory _Presenter(
-          {final int? id,
-          @JsonKey(name: 'device_id') final String deviceId,
-          final String label,
-          final Map<String, dynamic>? offer,
-          final DateTime? heartbeat,
-          @JsonKey(name: 'created_at') final DateTime? createdAt}) =
-      _$PresenterImpl;
+      {final int? id,
+      @JsonKey(name: 'created_at') final DateTime? createdAt,
+      final String label,
+      @JsonKey(name: 'device_id') final String deviceId,
+      final DateTime? heartbeat}) = _$PresenterImpl;
 
   factory _Presenter.fromJson(Map<String, dynamic> json) =
       _$PresenterImpl.fromJson;
@@ -257,17 +229,15 @@ abstract class _Presenter implements Presenter {
   @override
   int? get id;
   @override
-  @JsonKey(name: 'device_id')
-  String get deviceId;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
   @override
   String get label;
   @override
-  Map<String, dynamic>? get offer;
+  @JsonKey(name: 'device_id')
+  String get deviceId;
   @override
   DateTime? get heartbeat;
-  @override
-  @JsonKey(name: 'created_at')
-  DateTime? get createdAt;
   @override
   @JsonKey(ignore: true)
   _$$PresenterImplCopyWith<_$PresenterImpl> get copyWith =>
