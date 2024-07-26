@@ -19,4 +19,12 @@ abstract class Env {
   static String twilioUsername = _Env.twilioUsername;
   @EnviedField(varName: 'TWILIO_PASSWORD', obfuscate: true)
   static String twilioPassword = _Env.twilioPassword;
+  
+  // TURN SERVER RYNEST (202.73.24.36)
+  @EnviedField(varName: 'RYNEST_TURN_URL', obfuscate: true)
+  static String rynesTurnUrl = _Env.rynesTurnUrl;
+  @EnviedField(varName: 'RYNEST_USERNAME', obfuscate: true)
+  static String rynestUsername = _Env.rynestUsername;
+  @EnviedField(varName: 'RYNEST_PASSWORD', obfuscate: true)
+  static String rynestPassword = _Env.rynestPassword;
 }

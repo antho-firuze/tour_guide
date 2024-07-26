@@ -37,8 +37,12 @@ class SignalingService {
         .toString();
 
     final basicAuth = 'Basic ${base64.encode(utf8.encode('${Env.twilioUsername}:${Env.twilioPassword}'))}';
-    final options = Options(headers: {"Authorization": basicAuth});
-    final state = await AsyncValue.guard(() async => await ref.read(dioProvider).post(url, options: options));
+    final options = Options(headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": basicAuth,
+    });
+    final state =
+        await AsyncValue.guard(() async => await ref.read(dioProvider).post(url, data: data, options: options));
 
     return state.value?.data;
   }

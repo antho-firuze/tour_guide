@@ -66,6 +66,13 @@ class _PresenterViewState extends ConsumerState<PresenterView> {
                         ),
                       ),
                       ListTile(
+                        title: Text('${serverName[Server.rynest36]}'),
+                        onTap: () {
+                          ref.read(serverProvider.notifier).state = Server.rynest36;
+                          if (mounted) context.pop();
+                        },
+                      ),
+                      ListTile(
                         title: Text('${serverName[Server.google]}'),
                         onTap: () {
                           ref.read(serverProvider.notifier).state = Server.google;

@@ -13,19 +13,20 @@ import 'package:tour_guide/model/presenter.dart';
 import 'package:tour_guide/signaling/signaling_service.dart';
 import 'package:tour_guide/utils/datetime_utils.dart';
 
-enum Server { google, meteredCA, twilio }
+enum Server { google, meteredCA, twilio, rynest36 }
 
 final serverName = <Server, String>{
   Server.google: "https://www.google.com/",
   Server.meteredCA: "https://www.metered.ca/",
   Server.twilio: "https://www.twilio.com/",
+  Server.rynest36: "Rynest-202.73.24.36",
 };
 
 final remoteRendererProvider = StateProvider<RTCVideoRenderer>((ref) => RTCVideoRenderer());
 final isConnectedProvider = StateProvider<bool>((ref) => false);
 final selectedPresenterProvider = StateProvider<Presenter?>((ref) => null);
 final audienceProvider = StateProvider<Audience?>((ref) => null);
-final timeoutProvider = StateProvider<int>((ref) => 10);
+final timeoutProvider = StateProvider<int>((ref) => 30);
 final serverProvider = StateProvider<Server>((ref) => Server.google);
 
 class Signaling2Ctrl {
@@ -40,7 +41,7 @@ class Signaling2Ctrl {
 
   RTCPeerConnection? _peer;
   Map<String, dynamic> _answer = {};
-  List<Map<String, dynamic>> _answerCandidates = [];
+  // List<Map<String, dynamic>> _answerCandidates = [];
 
   MediaStream? _remoteStream;
 
@@ -50,7 +51,6 @@ class Signaling2Ctrl {
   int connectionTimeout = 10; // in seconds
   void Function()? onTimeout;
 
-  RTCPeerConnectionState? _peerConnectionState;
   void Function()? onDisconnected;
   void Function()? onFailed;
   void Function(String serverName)? onServerConnectionFailed;
@@ -117,6 +117,32 @@ class Signaling2Ctrl {
 
           _configuration = state.value;
           break;
+        case Server.rynest36:
+          final serverRynest = Env.rynesTurnUrl;
+          final username = Env.rynestUsername;
+          final password = Env.rynestPassword;
+          _configuration['ice_servers'] = [
+            {"url": "stun:$serverRynest", "urls": "stun:$serverRynest"},
+            {
+              "url": "turn:$serverRynest",
+              "urls": "turn:$serverRynest",
+              "username": username,
+              "credential": password,
+            },
+            {
+              "url": "turn:$serverRynest?transport=udp",
+              "urls": "turn:$serverRynest?transport=udp",
+              "username": username,
+              "credential": password,
+            },
+            {
+              "url": "turn:$serverRynest?transport=tcp",
+              "urls": "turn:$serverRynest?transport=tcp",
+              "username": username,
+              "credential": password,
+            },
+          ];
+          break;
       }
 
       log('$_configuration', name: 'signaling');
@@ -129,7 +155,7 @@ class Signaling2Ctrl {
     // Set Timeout connection to peerConnection
     log('set connectionTimeout : $connectionTimeout', name: 'signaling');
     _timeoutTimer = Timer.periodic(Duration(seconds: connectionTimeout), (timer) async {
-      if (_peerConnectionState == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+      if (await _peer?.getConnectionState() == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
         log('timeoutTimer | cancelled', name: 'signaling');
         timer.cancel();
       } else {
@@ -150,11 +176,15 @@ class Signaling2Ctrl {
     _registerPeerConnectionListeners(audience.id!);
 
     // CANDIDATES
-    _peer!.onIceCandidate = (RTCIceCandidate candidate) async => _answerCandidates.add(candidate.toMap());
+    // _peer!.onIceCandidate = (RTCIceCandidate candidate) async => _answerCandidates.add(candidate.toMap());
+    _peer!.onIceCandidate = (RTCIceCandidate candidate) async {
+      // _answerCandidates.add(candidate.toMap());
+      _answer = (await _peer?.getLocalDescription())?.toMap();
+    };
 
     // ADD REMOTE STREAM
     _peer?.onAddStream = (stream) {
-      log('Add remote stream: $stream', name: 'signaling');
+      log('Add remote stream', name: 'signaling');
       ref.read(remoteRendererProvider.notifier).state.srcObject = stream;
     };
 
@@ -166,6 +196,16 @@ class Signaling2Ctrl {
         await _remoteStream?.addTrack(track);
       });
     };
+
+    await _peer?.addTransceiver(
+      kind: RTCRtpMediaType.RTCRtpMediaTypeVideo,
+      init: RTCRtpTransceiverInit(direction: TransceiverDirection.RecvOnly),
+    );
+
+    await _peer?.addTransceiver(
+      kind: RTCRtpMediaType.RTCRtpMediaTypeAudio,
+      init: RTCRtpTransceiverInit(direction: TransceiverDirection.RecvOnly),
+    );
 
     // WAITING OFFER RESPONSE
     _audienceSubs = ref.listen(audienceByIdStreamProvider(audience.id!), (previous, next) async {
@@ -187,14 +227,14 @@ class Signaling2Ctrl {
           await _peer?.setLocalDescription(createdAnswer);
         }
 
-        if (audience.offerCandidate != null && audience.answerCandidate == null) {
-          log('Got remote ICE Candidate | length = ${audience.offerCandidate?.length} ', name: 'signaling');
-          for (var item in audience.offerCandidate!) {
-            log('Adding remote ICE candidate', name: 'signaling');
-            final candidate = RTCIceCandidate(item['candidate'], item['sdpMid'], item['sdpMLineIndex']);
-            await _peer?.addCandidate(candidate);
-          }
-        }
+        // if (audience.offerCandidate != null && audience.answerCandidate == null) {
+        //   log('Got remote ICE Candidate | length = ${audience.offerCandidate?.length} ', name: 'signaling');
+        //   for (var item in audience.offerCandidate!) {
+        //     log('Adding remote ICE candidate', name: 'signaling');
+        //     final candidate = RTCIceCandidate(item['candidate'], item['sdpMid'], item['sdpMLineIndex']);
+        //     await _peer?.addCandidate(candidate);
+        //   }
+        // }
       }
     });
   }
@@ -260,16 +300,16 @@ class Signaling2Ctrl {
       if (state == RTCIceGatheringState.RTCIceGatheringStateComplete) {
         var data = {
           "answer": _answer,
-          "answer_candidate": _answerCandidates,
+          // "answer_candidate": _answerCandidates,
         };
-        log('Got ICE Candidate', name: 'signaling');
+        log('Got Local ICE Candidate', name: 'signaling');
+        log(_answer.toString(), name: 'signaling');
         await ref.read(signalingServiceProvider).updateAudience(data, id);
       }
     };
 
     _peer?.onConnectionState = (RTCPeerConnectionState state) async {
       log('Connection state change: $state', name: 'signaling');
-      _peerConnectionState = state;
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
         ref.read(isConnectedProvider.notifier).state = true;
       }
