@@ -118,7 +118,7 @@ class _PresenterViewState extends ConsumerState<PresenterView> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: ref.read(presenterCtrlProvider).start,
+                    onPressed: ref.read(presenterCtrlProvider).startMeeting,
                     child: const Text('Start'),
                   ),
                 ),
@@ -163,7 +163,7 @@ class _PresenterViewState extends ConsumerState<PresenterView> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: ref.read(presenterCtrlProvider).stop,
+                    onPressed: ref.read(presenterCtrlProvider).closeMeeting,
                     child: const Text('Stop', style: TextStyle(color: Colors.red)),
                   ),
                 ),

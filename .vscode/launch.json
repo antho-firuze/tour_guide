@@ -22,7 +22,7 @@
             "flutterMode": "release"
         },
         {
-            "name": "S-A5 Wire",
+            "name": "A5 Wire",
             "request": "launch",
             "type": "dart",
             "deviceId": "52001972ee95649f"
@@ -49,7 +49,7 @@
     "compounds": [
         {
             "name": "All Devices",
-            "configurations": ["S-A5 Wire", "RMX1807"]
+            "configurations": ["A5 Wire", "RMX1807"]
         },
         {
             "name": "All Emu",
@@ -57,11 +57,11 @@
         },
         {
             "name": "A5-Emu",
-            "configurations": ["S-A5 Wire", "tour_guide"]
+            "configurations": ["A5 Wire", "tour_guide"]
         },
         {
             "name": "A5-All-Emu",
-            "configurations": ["S-A5 Wire", "Pixel-7", "Pixel-3"]
+            "configurations": ["A5 Wire", "Pixel-7", "Pixel-3"]
         }
     ]
 }

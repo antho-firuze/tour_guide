@@ -35,6 +35,7 @@ mixin _$Audience {
   @JsonKey(name: 'answer_candidate')
   List<Map<String, dynamic>>? get answerCandidate =>
       throw _privateConstructorUsedError;
+  String get state => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -57,7 +58,8 @@ abstract class $AudienceCopyWith<$Res> {
       List<Map<String, dynamic>>? offerCandidate,
       Map<String, dynamic>? answer,
       @JsonKey(name: 'answer_candidate')
-      List<Map<String, dynamic>>? answerCandidate});
+      List<Map<String, dynamic>>? answerCandidate,
+      String state});
 }
 
 /// @nodoc
@@ -81,6 +83,7 @@ class _$AudienceCopyWithImpl<$Res, $Val extends Audience>
     Object? offerCandidate = freezed,
     Object? answer = freezed,
     Object? answerCandidate = freezed,
+    Object? state = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -115,6 +118,10 @@ class _$AudienceCopyWithImpl<$Res, $Val extends Audience>
           ? _value.answerCandidate
           : answerCandidate // ignore: cast_nullable_to_non_nullable
               as List<Map<String, dynamic>>?,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -137,7 +144,8 @@ abstract class _$$AudienceImplCopyWith<$Res>
       List<Map<String, dynamic>>? offerCandidate,
       Map<String, dynamic>? answer,
       @JsonKey(name: 'answer_candidate')
-      List<Map<String, dynamic>>? answerCandidate});
+      List<Map<String, dynamic>>? answerCandidate,
+      String state});
 }
 
 /// @nodoc
@@ -159,6 +167,7 @@ class __$$AudienceImplCopyWithImpl<$Res>
     Object? offerCandidate = freezed,
     Object? answer = freezed,
     Object? answerCandidate = freezed,
+    Object? state = null,
   }) {
     return _then(_$AudienceImpl(
       id: freezed == id
@@ -193,6 +202,10 @@ class __$$AudienceImplCopyWithImpl<$Res>
           ? _value._answerCandidate
           : answerCandidate // ignore: cast_nullable_to_non_nullable
               as List<Map<String, dynamic>>?,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -210,7 +223,8 @@ class _$AudienceImpl implements _Audience {
       final List<Map<String, dynamic>>? offerCandidate,
       final Map<String, dynamic>? answer,
       @JsonKey(name: 'answer_candidate')
-      final List<Map<String, dynamic>>? answerCandidate})
+      final List<Map<String, dynamic>>? answerCandidate,
+      this.state = 'join'})
       : _offer = offer,
         _offerCandidate = offerCandidate,
         _answer = answer,
@@ -273,8 +287,12 @@ class _$AudienceImpl implements _Audience {
   }
 
   @override
+  @JsonKey()
+  final String state;
+
+  @override
   String toString() {
-    return 'Audience(id: $id, createdAt: $createdAt, presenterId: $presenterId, deviceId: $deviceId, offer: $offer, offerCandidate: $offerCandidate, answer: $answer, answerCandidate: $answerCandidate)';
+    return 'Audience(id: $id, createdAt: $createdAt, presenterId: $presenterId, deviceId: $deviceId, offer: $offer, offerCandidate: $offerCandidate, answer: $answer, answerCandidate: $answerCandidate, state: $state)';
   }
 
   @override
@@ -294,7 +312,8 @@ class _$AudienceImpl implements _Audience {
                 .equals(other._offerCandidate, _offerCandidate) &&
             const DeepCollectionEquality().equals(other._answer, _answer) &&
             const DeepCollectionEquality()
-                .equals(other._answerCandidate, _answerCandidate));
+                .equals(other._answerCandidate, _answerCandidate) &&
+            (identical(other.state, state) || other.state == state));
   }
 
   @JsonKey(ignore: true)
@@ -308,7 +327,8 @@ class _$AudienceImpl implements _Audience {
       const DeepCollectionEquality().hash(_offer),
       const DeepCollectionEquality().hash(_offerCandidate),
       const DeepCollectionEquality().hash(_answer),
-      const DeepCollectionEquality().hash(_answerCandidate));
+      const DeepCollectionEquality().hash(_answerCandidate),
+      state);
 
   @JsonKey(ignore: true)
   @override
@@ -335,7 +355,8 @@ abstract class _Audience implements Audience {
       final List<Map<String, dynamic>>? offerCandidate,
       final Map<String, dynamic>? answer,
       @JsonKey(name: 'answer_candidate')
-      final List<Map<String, dynamic>>? answerCandidate}) = _$AudienceImpl;
+      final List<Map<String, dynamic>>? answerCandidate,
+      final String state}) = _$AudienceImpl;
 
   factory _Audience.fromJson(Map<String, dynamic> json) =
       _$AudienceImpl.fromJson;
@@ -362,242 +383,9 @@ abstract class _Audience implements Audience {
   @JsonKey(name: 'answer_candidate')
   List<Map<String, dynamic>>? get answerCandidate;
   @override
+  String get state;
+  @override
   @JsonKey(ignore: true)
   _$$AudienceImplCopyWith<_$AudienceImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-AudienceState _$AudienceStateFromJson(Map<String, dynamic> json) {
-  return _AudienceState.fromJson(json);
-}
-
-/// @nodoc
-mixin _$AudienceState {
-  int? get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'audience_id')
-  int? get audienceId => throw _privateConstructorUsedError;
-  DateTime? get heartbeat => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_closed')
-  bool get isClosed => throw _privateConstructorUsedError;
-  @JsonKey(name: 'created_at')
-  DateTime? get createdAt => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $AudienceStateCopyWith<AudienceState> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $AudienceStateCopyWith<$Res> {
-  factory $AudienceStateCopyWith(
-          AudienceState value, $Res Function(AudienceState) then) =
-      _$AudienceStateCopyWithImpl<$Res, AudienceState>;
-  @useResult
-  $Res call(
-      {int? id,
-      @JsonKey(name: 'audience_id') int? audienceId,
-      DateTime? heartbeat,
-      @JsonKey(name: 'is_closed') bool isClosed,
-      @JsonKey(name: 'created_at') DateTime? createdAt});
-}
-
-/// @nodoc
-class _$AudienceStateCopyWithImpl<$Res, $Val extends AudienceState>
-    implements $AudienceStateCopyWith<$Res> {
-  _$AudienceStateCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? audienceId = freezed,
-    Object? heartbeat = freezed,
-    Object? isClosed = null,
-    Object? createdAt = freezed,
-  }) {
-    return _then(_value.copyWith(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-      audienceId: freezed == audienceId
-          ? _value.audienceId
-          : audienceId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      heartbeat: freezed == heartbeat
-          ? _value.heartbeat
-          : heartbeat // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      isClosed: null == isClosed
-          ? _value.isClosed
-          : isClosed // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$AudienceStateImplCopyWith<$Res>
-    implements $AudienceStateCopyWith<$Res> {
-  factory _$$AudienceStateImplCopyWith(
-          _$AudienceStateImpl value, $Res Function(_$AudienceStateImpl) then) =
-      __$$AudienceStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {int? id,
-      @JsonKey(name: 'audience_id') int? audienceId,
-      DateTime? heartbeat,
-      @JsonKey(name: 'is_closed') bool isClosed,
-      @JsonKey(name: 'created_at') DateTime? createdAt});
-}
-
-/// @nodoc
-class __$$AudienceStateImplCopyWithImpl<$Res>
-    extends _$AudienceStateCopyWithImpl<$Res, _$AudienceStateImpl>
-    implements _$$AudienceStateImplCopyWith<$Res> {
-  __$$AudienceStateImplCopyWithImpl(
-      _$AudienceStateImpl _value, $Res Function(_$AudienceStateImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? audienceId = freezed,
-    Object? heartbeat = freezed,
-    Object? isClosed = null,
-    Object? createdAt = freezed,
-  }) {
-    return _then(_$AudienceStateImpl(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-      audienceId: freezed == audienceId
-          ? _value.audienceId
-          : audienceId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      heartbeat: freezed == heartbeat
-          ? _value.heartbeat
-          : heartbeat // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      isClosed: null == isClosed
-          ? _value.isClosed
-          : isClosed // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$AudienceStateImpl implements _AudienceState {
-  _$AudienceStateImpl(
-      {this.id,
-      @JsonKey(name: 'audience_id') this.audienceId,
-      this.heartbeat,
-      @JsonKey(name: 'is_closed') this.isClosed = false,
-      @JsonKey(name: 'created_at') this.createdAt});
-
-  factory _$AudienceStateImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AudienceStateImplFromJson(json);
-
-  @override
-  final int? id;
-  @override
-  @JsonKey(name: 'audience_id')
-  final int? audienceId;
-  @override
-  final DateTime? heartbeat;
-  @override
-  @JsonKey(name: 'is_closed')
-  final bool isClosed;
-  @override
-  @JsonKey(name: 'created_at')
-  final DateTime? createdAt;
-
-  @override
-  String toString() {
-    return 'AudienceState(id: $id, audienceId: $audienceId, heartbeat: $heartbeat, isClosed: $isClosed, createdAt: $createdAt)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AudienceStateImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.audienceId, audienceId) ||
-                other.audienceId == audienceId) &&
-            (identical(other.heartbeat, heartbeat) ||
-                other.heartbeat == heartbeat) &&
-            (identical(other.isClosed, isClosed) ||
-                other.isClosed == isClosed) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, audienceId, heartbeat, isClosed, createdAt);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AudienceStateImplCopyWith<_$AudienceStateImpl> get copyWith =>
-      __$$AudienceStateImplCopyWithImpl<_$AudienceStateImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$AudienceStateImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _AudienceState implements AudienceState {
-  factory _AudienceState(
-          {final int? id,
-          @JsonKey(name: 'audience_id') final int? audienceId,
-          final DateTime? heartbeat,
-          @JsonKey(name: 'is_closed') final bool isClosed,
-          @JsonKey(name: 'created_at') final DateTime? createdAt}) =
-      _$AudienceStateImpl;
-
-  factory _AudienceState.fromJson(Map<String, dynamic> json) =
-      _$AudienceStateImpl.fromJson;
-
-  @override
-  int? get id;
-  @override
-  @JsonKey(name: 'audience_id')
-  int? get audienceId;
-  @override
-  DateTime? get heartbeat;
-  @override
-  @JsonKey(name: 'is_closed')
-  bool get isClosed;
-  @override
-  @JsonKey(name: 'created_at')
-  DateTime? get createdAt;
-  @override
-  @JsonKey(ignore: true)
-  _$$AudienceStateImplCopyWith<_$AudienceStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

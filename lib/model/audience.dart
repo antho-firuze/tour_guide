@@ -17,22 +17,8 @@ class Audience with _$Audience {
     @JsonKey(name: 'offer_candidate') List<Map<String, dynamic>>? offerCandidate,
     Map<String, dynamic>? answer,
     @JsonKey(name: 'answer_candidate') List<Map<String, dynamic>>? answerCandidate,
+    @Default('join') String state,
   }) = _Audience;
 
   factory Audience.fromJson(Map<String, dynamic> json) => _$AudienceFromJson(json);
-}
-
-
-@freezed
-class AudienceState with _$AudienceState {
-
-  factory AudienceState({
-    int? id,
-    @JsonKey(name: 'audience_id') int? audienceId,
-    DateTime? heartbeat,
-    @JsonKey(name: 'is_closed') @Default(false) bool isClosed,
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-  }) = _AudienceState;
-
-  factory AudienceState.fromJson(Map<String, dynamic> json) => _$AudienceStateFromJson(json);
 }

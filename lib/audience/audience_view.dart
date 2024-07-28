@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:super_icons/super_icons.dart';
 import 'package:tour_guide/audience/audience_controller.dart';
-import 'package:tour_guide/audience/audience_service.dart';
-import 'package:tour_guide/signaling/signaling2_controller.dart';
+import 'package:tour_guide/signaling/signaling_controller.dart';
+import 'package:tour_guide/signaling/signaling_service.dart';
 import 'package:tour_guide/utils/page_utils.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -72,7 +72,7 @@ class _AudienceViewState extends ConsumerState<AudienceView> {
               child: Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: CloseButton(
-                  onPressed: ref.read(audienceCtrlProvider).stop,
+                  onPressed: ref.read(audienceCtrlProvider).leaveMeeting,
                 ),
               ),
             ),
@@ -221,7 +221,7 @@ class _AudienceViewState extends ConsumerState<AudienceView> {
                 child: ListTile(
                   title: Text('Topic : ${presenter.label}'),
                   subtitle: Text("Presenter : ${presenter.deviceId}"),
-                  onTap: () => ref.read(audienceCtrlProvider).join(presenter),
+                  onTap: () => ref.read(audienceCtrlProvider).joinMeeting(presenter),
                 ),
               );
             },

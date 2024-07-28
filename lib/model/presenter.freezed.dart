@@ -27,6 +27,7 @@ mixin _$Presenter {
   @JsonKey(name: 'device_id')
   String get deviceId => throw _privateConstructorUsedError;
   DateTime? get heartbeat => throw _privateConstructorUsedError;
+  String get state => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,7 +45,8 @@ abstract class $PresenterCopyWith<$Res> {
       @JsonKey(name: 'created_at') DateTime? createdAt,
       String label,
       @JsonKey(name: 'device_id') String deviceId,
-      DateTime? heartbeat});
+      DateTime? heartbeat,
+      String state});
 }
 
 /// @nodoc
@@ -65,6 +67,7 @@ class _$PresenterCopyWithImpl<$Res, $Val extends Presenter>
     Object? label = null,
     Object? deviceId = null,
     Object? heartbeat = freezed,
+    Object? state = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -87,6 +90,10 @@ class _$PresenterCopyWithImpl<$Res, $Val extends Presenter>
           ? _value.heartbeat
           : heartbeat // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -104,7 +111,8 @@ abstract class _$$PresenterImplCopyWith<$Res>
       @JsonKey(name: 'created_at') DateTime? createdAt,
       String label,
       @JsonKey(name: 'device_id') String deviceId,
-      DateTime? heartbeat});
+      DateTime? heartbeat,
+      String state});
 }
 
 /// @nodoc
@@ -123,6 +131,7 @@ class __$$PresenterImplCopyWithImpl<$Res>
     Object? label = null,
     Object? deviceId = null,
     Object? heartbeat = freezed,
+    Object? state = null,
   }) {
     return _then(_$PresenterImpl(
       id: freezed == id
@@ -145,6 +154,10 @@ class __$$PresenterImplCopyWithImpl<$Res>
           ? _value.heartbeat
           : heartbeat // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -157,7 +170,8 @@ class _$PresenterImpl implements _Presenter {
       @JsonKey(name: 'created_at') this.createdAt,
       this.label = '',
       @JsonKey(name: 'device_id') this.deviceId = '',
-      this.heartbeat});
+      this.heartbeat,
+      this.state = 'active'});
 
   factory _$PresenterImpl.fromJson(Map<String, dynamic> json) =>
       _$$PresenterImplFromJson(json);
@@ -175,10 +189,13 @@ class _$PresenterImpl implements _Presenter {
   final String deviceId;
   @override
   final DateTime? heartbeat;
+  @override
+  @JsonKey()
+  final String state;
 
   @override
   String toString() {
-    return 'Presenter(id: $id, createdAt: $createdAt, label: $label, deviceId: $deviceId, heartbeat: $heartbeat)';
+    return 'Presenter(id: $id, createdAt: $createdAt, label: $label, deviceId: $deviceId, heartbeat: $heartbeat, state: $state)';
   }
 
   @override
@@ -193,13 +210,14 @@ class _$PresenterImpl implements _Presenter {
             (identical(other.deviceId, deviceId) ||
                 other.deviceId == deviceId) &&
             (identical(other.heartbeat, heartbeat) ||
-                other.heartbeat == heartbeat));
+                other.heartbeat == heartbeat) &&
+            (identical(other.state, state) || other.state == state));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, createdAt, label, deviceId, heartbeat);
+  int get hashCode => Object.hash(
+      runtimeType, id, createdAt, label, deviceId, heartbeat, state);
 
   @JsonKey(ignore: true)
   @override
@@ -221,7 +239,8 @@ abstract class _Presenter implements Presenter {
       @JsonKey(name: 'created_at') final DateTime? createdAt,
       final String label,
       @JsonKey(name: 'device_id') final String deviceId,
-      final DateTime? heartbeat}) = _$PresenterImpl;
+      final DateTime? heartbeat,
+      final String state}) = _$PresenterImpl;
 
   factory _Presenter.fromJson(Map<String, dynamic> json) =
       _$PresenterImpl.fromJson;
@@ -238,6 +257,8 @@ abstract class _Presenter implements Presenter {
   String get deviceId;
   @override
   DateTime? get heartbeat;
+  @override
+  String get state;
   @override
   @JsonKey(ignore: true)
   _$$PresenterImplCopyWith<_$PresenterImpl> get copyWith =>

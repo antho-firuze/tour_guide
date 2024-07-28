@@ -22,6 +22,7 @@ _$AudienceImpl _$$AudienceImplFromJson(Map<String, dynamic> json) =>
       answerCandidate: (json['answer_candidate'] as List<dynamic>?)
           ?.map((e) => e as Map<String, dynamic>)
           .toList(),
+      state: json['state'] as String? ?? 'join',
     );
 
 Map<String, dynamic> _$$AudienceImplToJson(_$AudienceImpl instance) =>
@@ -34,26 +35,5 @@ Map<String, dynamic> _$$AudienceImplToJson(_$AudienceImpl instance) =>
       'offer_candidate': instance.offerCandidate,
       'answer': instance.answer,
       'answer_candidate': instance.answerCandidate,
-    };
-
-_$AudienceStateImpl _$$AudienceStateImplFromJson(Map<String, dynamic> json) =>
-    _$AudienceStateImpl(
-      id: (json['id'] as num?)?.toInt(),
-      audienceId: (json['audience_id'] as num?)?.toInt(),
-      heartbeat: json['heartbeat'] == null
-          ? null
-          : DateTime.parse(json['heartbeat'] as String),
-      isClosed: json['is_closed'] as bool? ?? false,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-    );
-
-Map<String, dynamic> _$$AudienceStateImplToJson(_$AudienceStateImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'audience_id': instance.audienceId,
-      'heartbeat': instance.heartbeat?.toIso8601String(),
-      'is_closed': instance.isClosed,
-      'created_at': instance.createdAt?.toIso8601String(),
+      'state': instance.state,
     };

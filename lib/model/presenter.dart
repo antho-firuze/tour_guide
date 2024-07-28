@@ -14,6 +14,7 @@ class Presenter with _$Presenter {
     @Default('') String label,
     @JsonKey(name: 'device_id') @Default('') String deviceId,
     DateTime? heartbeat,
+    @Default('active') String state,
   }) = _Presenter;
 
   factory Presenter.fromJson(Map<String, dynamic> json) => _$PresenterFromJson(json);

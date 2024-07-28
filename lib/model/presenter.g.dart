@@ -17,6 +17,7 @@ _$PresenterImpl _$$PresenterImplFromJson(Map<String, dynamic> json) =>
       heartbeat: json['heartbeat'] == null
           ? null
           : DateTime.parse(json['heartbeat'] as String),
+      state: json['state'] as String? ?? 'active',
     );
 
 Map<String, dynamic> _$$PresenterImplToJson(_$PresenterImpl instance) =>
@@ -26,4 +27,5 @@ Map<String, dynamic> _$$PresenterImplToJson(_$PresenterImpl instance) =>
       'label': instance.label,
       'device_id': instance.deviceId,
       'heartbeat': instance.heartbeat?.toIso8601String(),
+      'state': instance.state,
     };
